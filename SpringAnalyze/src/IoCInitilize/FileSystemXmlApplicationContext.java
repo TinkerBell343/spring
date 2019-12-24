@@ -5,13 +5,19 @@ import java.util.Set;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.BeanDefinitionDocumentReader;
+import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 /**
@@ -127,8 +133,41 @@ public class FileSystemXmlApplicationContext {
 	protected int registerBeanDefinitions(){
 		//得到BeanDefinitionDocumentReader来对XML文件内定义的BeanDefinition进行解析
 		BeanDefinitionDocumentReader documentReader = null;
-		//完成具体的解析过程
-		//documentReader.registerBeanDefinitions(arg0, arg1);
+		//完成具体的解析过程，处理结果由BeanDefinitionHolder对象来持有
+		//documentReader.registerBeanDefinitions(arg0, arg1); 调用doRegisterBeanDefinitions()
 		return 0;
+	}
+	
+	protected void doRegisterBeanDefinitions(Element root){
+		parserBeanDefinitions();
+	}
+	//创建代理解析BeanDefinition
+	protected void parserBeanDefinitions(){
+		parserDefaultElement();
+	}
+	//这里按标签类型(bean,alias,import,beans....)分别调用相应的处理方法
+	private void parserDefaultElement(){
+		//processBeanDefinition();
+	}
+	
+	protected void processBeanDefinition(Element ele,BeanDefinitionParserDelegate delegate){
+		//解析并返回BeanDefinitionHolder,这里会生成beanName,aliases[]
+		//通过调用AbstractBeanDefinition beanDefinition = parserBeanDefinitionElement(Element ele,String beanName,BeanDefinition containingBean)
+		//来引发对Bean元素的详细解析
+		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
+		//对Bean解析完成后开始进行BeanDefinition的注册
+		//注册过程synchronized修饰保证数据一致性，注册前先检查IoC容器中是否已经注册了同样的名字
+		//如果有同样的名字且不允许覆盖，则抛出异常。注册操作本质上是将beanName作为key，beanDefinition作为value
+		//放入beanDefinitionMap中去的过程。完成了BeanDefinition的注册也就完成了IoC容器的初始化过程。
+		BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, null);
+	}
+	
+	public AbstractBeanDefinition parserBeanDefinitionElement(Element ele,String beanName,BeanDefinition containingBean){
+		//创建BeanDefinition对象，准备信息载入
+		//AbstractBeanDefinition bd = createBeanDefinition(className,parent);
+		//解析bean的元素属性
+		//parserBeanDefinitionAttributes(ele,beanName,bd);
+		//解析bean元素的各种属性
+		return null;
 	}
 }
