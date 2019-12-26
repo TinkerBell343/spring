@@ -17,6 +17,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
  * @author Origi_hz2bfvo
  *
  */
+@SuppressWarnings({"unused","null"})
 public class AbstractBeanFactory {
 
 	public Object getBean(String name){

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.BeanDefinitionDocumentReader;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.beans.support.ResourceEditorRegistrar;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -26,15 +27,58 @@ import org.xml.sax.InputSource;
  *
  */
 public class FileSystemXmlApplicationContext {
+	
+	String LOAD_TIME_WEAVER_BEAN_NAME = "loadTimeWeaver";
  
+	String SYSTEM_PROPERTIES_BEAN_NAME = "systemProperties";
+	
+	String SYSTEM_ENVIRONMENT_BEAN_NAME = "systemEnvironment";
+	
 	//在构造方法中调用了refresh()方法
 	public FileSystemXmlApplicationContext(){
 		refresh();
 	}
 	//IoC容器初始会由此进入
 	public void refresh(){
+		//获取BeanFactory
 		ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
-		
+		prepareBeanFactory(beanFactory);
+	}
+	//容器启动的准备工作
+	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory){
+		//为容器配置ClassLoader，存在直接设置，不存在则新建一个默认类加载器
+		//beanFactory.setBeanClassLoader(getClassLoader());
+		//设置EL表达式解析器Bean初始化完成后填充属性(applyPropertyValues())时会用到
+		//beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver());
+		//配置属性注册解析器PropertyEditor
+		//beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this));
+		//添加BeanPostProcessor，当bean被这个工厂创建的时候会用到PostProcessor
+		//beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		//设置忽略自动装配的接口，在ApplicationContextAwareProcessor注册后下面的接口已经注册完毕
+		//beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
+		//beanFactory.ignoreDependencyInterface(ApplicationEventPublisherAware.class);
+		//beanFactory.ignoreDependencyInterface(MessageSourceAware.class);
+		//beanFactory.ignoreDependencyInterface(ApplicationaContextAware.class);
+		//注册可以解析的依赖关系
+		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
+		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
+		//beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
+		//beanFactory.registerResolvableDependency(ApplicationContext.class, this);
+		//如果当前的beanFactory包含loadTimeWeaver(代码织入) bean，说明存在类加载期织入AspectJ，需要把
+		//当前的beanFactory交给BeanPostProcessor的实现类LoadTimeWeaverAwareProcessor来处理，从而实现
+		//类加载器织入AspectJ的目的
+		if(beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)){
+			//beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
+			//beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
+		}
+		//注册系统配置组件bean
+		if(!beanFactory.containsBean(SYSTEM_PROPERTIES_BEAN_NAME)){
+			beanFactory.registerSingleton(SYSTEM_PROPERTIES_BEAN_NAME, System.getProperties());
+		}
+		//注册系统环境组件bean
+		if(!beanFactory.containsBean(SYSTEM_ENVIRONMENT_BEAN_NAME)){
+			beanFactory.registerSingleton(SYSTEM_ENVIRONMENT_BEAN_NAME, System.getenv());
+		}
 	}
 	//若已建立BeanFactory则销毁并关闭此BeanFactory
 	private void refreshBeanFactory(){
