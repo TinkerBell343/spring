@@ -14,7 +14,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.BeanDefinitionDocumentReader;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.beans.support.ResourceEditorRegistrar;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -40,9 +39,17 @@ public class FileSystemXmlApplicationContext {
 	}
 	//IoC容器初始会由此进入
 	public void refresh(){
+		//prepareRefresh();
 		//获取BeanFactory
 		ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 		prepareBeanFactory(beanFactory);
+		//这是一个模板方法，BeanFactory的准备工作完成后进行后置处理工作
+		//此时所有的beanDefinition已经加载但还未实例化，例如在AbstractRefreshableWebApplicationContext
+		//中会向beanFactory中添加ServerletContextAwareProcessor处理器
+		//并注册web应用的scopes和环境有关的beans
+		//postProcessBeanFactory();
+		
+		invokeBeanFactoryPostProcessors(beanFactory);
 	}
 	//容器启动的准备工作
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory){
@@ -213,5 +220,9 @@ public class FileSystemXmlApplicationContext {
 		//parserBeanDefinitionAttributes(ele,beanName,bd);
 		//解析bean元素的各种属性
 		return null;
+	}
+	
+	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+
 	}
 }
