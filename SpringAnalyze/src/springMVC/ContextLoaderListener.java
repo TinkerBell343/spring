@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +23,7 @@ import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
+import org.springframework.web.SpringServletContainerInitializer;
 /**
  * Spring MVC启动类，也称为监听器。这个监听器是启动 IoC容器并把它载入到Web容器的主要功能模块，也是整个 Spring
  * Web应用加载IoC容器的第一个地方。 在ContextLoaderListener中实现的是ServletContextListener接口，
@@ -91,6 +93,7 @@ public class ContextLoaderListener {
 			throw new IllegalStateException("Could not load 'ContextLoader.properties': " + ex.getMessage());
 		}
 	}
+	
 	// 在服务器启动时，ServletContextListener的contextInitialized()被调用。 启动IoC容器的建立与初始化过程
 	public void contextInitialized(ServletContextEvent event) {
 		initWebApplicationContext(event.getServletContext());
@@ -185,6 +188,7 @@ public class ContextLoaderListener {
 		}
 	}
 	
+	//默认为空实现，可被重写以用于载入需要的双亲上下文实例
 	@Nullable
 	protected ApplicationContext loadParentContext(ServletContext servletContext) {
 		return null;

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
 
 import org.springframework.beans.BeanWrapper;
@@ -157,7 +158,7 @@ public class DispatcherServlet {
 		}
     	//各种log判断
     }
-    //与ContextLoaderListener初始化调用的为同一个方法
+    //与ContextLoaderListener初始化方法类似
     protected WebApplicationContext initWebApplicationContext() {
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -176,6 +177,7 @@ public class DispatcherServlet {
 						// the root application context (if any; may be null) as the parent
 						cwac.setParent(rootContext);
 					}
+					//设置属性，Refresh()启动容器初始化
 					//configureAndRefreshWebApplicationContext(cwac);
 				}
 			}
@@ -189,6 +191,7 @@ public class DispatcherServlet {
 		}
 		if (wac == null) {
 			// No context instance is defined for this servlet -> create a local one
+			//FrameworkServlet内的实现，创建后调用configureAndRefreshWebApplicationContext()
 			//wac = createWebApplicationContext(rootContext);
 		}
 
