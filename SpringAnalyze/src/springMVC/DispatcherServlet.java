@@ -64,7 +64,7 @@ public class DispatcherServlet {
 	 */
 	public static final String SERVLET_CONTEXT_PREFIX = FrameworkServlet.class.getName() + ".CONTEXT.";
 
-	//HttServletBean
+	//HttpServletBean
 	public final void init() throws ServletException {
 		
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
@@ -160,6 +160,7 @@ public class DispatcherServlet {
     }
     //与ContextLoaderListener初始化方法类似
     protected WebApplicationContext initWebApplicationContext() {
+    	//获取跟上下文
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;

@@ -28,7 +28,12 @@ import org.springframework.web.SpringServletContainerInitializer;
  * Spring MVC启动类，也称为监听器。这个监听器是启动 IoC容器并把它载入到Web容器的主要功能模块，也是整个 Spring
  * Web应用加载IoC容器的第一个地方。 在ContextLoaderListener中实现的是ServletContextListener接口，
  * 这个接口的函数会结合Web容器的生命周期被调用。 当ServletContext发生变化时吗，监听器将做出预先指定的响应。
- * 
+ * 调用过程：linsenterStart()->findApplicationListeners()取得需要初始化的静态监听器
+ *                          ->getInstanceManager().newInstance(listener) 循环实例化每一个监听器
+ *                          ->按照监听器的实例类型将其分为eventListener和lifecycleListener
+ *                          ->getApplicationEventListeners()获取动态的eventListener并与上面相应的列表合并在一起
+ *                          ->getApplicationLifecycleListeners()获取动态的lifecycleListener并与上面相应的列表合并在一起
+ *                          ->循环调用为ServletContextListener类型实例的（lifecycleListener）contextInitialized()方法
  * @author whisper
  *
  */
@@ -40,7 +45,6 @@ public class ContextLoaderListener {
 	 */
 	@Nullable
 	private WebApplicationContext context;
-	
 	/**
 	 * Config param for the root WebApplicationContext id,
 	 * to be used as serialization id for the underlying BeanFactory: {@value}.
@@ -99,7 +103,7 @@ public class ContextLoaderListener {
 		initWebApplicationContext(event.getServletContext());
 	}
 
-	// 开始对WebApplicationContext进行初始化
+	// ContextLoader中开始对WebApplicationContext进行初始化
 	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
 		// 首先判断在ServletContext中是否已经有根上下文存在
 		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
@@ -206,7 +210,7 @@ public class ContextLoaderListener {
 						ObjectUtils.getDisplayString(sc.getContextPath()));
 			}
 		}
-		//设置双亲上下文
+		//设置上下文
 		wac.setServletContext(sc);
 		//设置ServletContext以及配置文件的位置参数
 		String configLocationParam = sc.getInitParameter(CONFIG_LOCATION_PARAM);
