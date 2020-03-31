@@ -28,7 +28,7 @@ import org.springframework.web.SpringServletContainerInitializer;
  * Spring MVC启动类，也称为监听器。这个监听器是启动 IoC容器并把它载入到Web容器的主要功能模块，也是整个 Spring
  * Web应用加载IoC容器的第一个地方。 在ContextLoaderListener中实现的是ServletContextListener接口，
  * 这个接口的函数会结合Web容器的生命周期被调用。 当ServletContext发生变化时吗，监听器将做出预先指定的响应。
- * 调用过程：linsenterStart()->findApplicationListeners()取得需要初始化的静态监听器
+ * 调用过程：StandardContext{linsenterStart()->findApplicationListeners()取得需要初始化的静态监听器
  *                          ->getInstanceManager().newInstance(listener) 循环实例化每一个监听器
  *                          ->按照监听器的实例类型将其分为eventListener和lifecycleListener
  *                          ->getApplicationEventListeners()获取动态的eventListener并与上面相应的列表合并在一起

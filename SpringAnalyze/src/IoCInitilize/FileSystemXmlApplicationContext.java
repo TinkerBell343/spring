@@ -47,6 +47,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+//import org.springframework.context.support.FileSystemXmlApplicationContext;
 /**
  * 以继承了DefaultListableBeanFactory的此ApplicationContext为例
  * @author Origi_hz2bfvo
