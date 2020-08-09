@@ -21,11 +21,7 @@ public class Query implements StatementCallBack<Object> {
 		}
 		try {
 			ResultSet rs = stmt.executeQuery(sql);
-			ResultSetMetaData metaData = null;
-			while(rs.next()){
-				metaData = rs.getMetaData();
-			}
-			return metaData;
+			return rs;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
