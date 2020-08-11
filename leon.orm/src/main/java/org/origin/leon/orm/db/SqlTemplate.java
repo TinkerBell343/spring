@@ -1,8 +1,5 @@
 package org.origin.leon.orm.db;
 
-import java.sql.ResultSetMetaData;
-import java.util.List;
-
 import org.origin.leon.orm.core.DefaultSimpleInitializer;
 import org.origin.leon.orm.core.Executor;
 import org.origin.leon.orm.util.OrmUtils;

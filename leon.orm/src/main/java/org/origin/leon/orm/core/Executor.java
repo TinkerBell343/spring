@@ -25,8 +25,6 @@ public class Executor {
 			return callback.doInStatement(conn.createStatement());
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally{
-			LocalDataSourceUtils.releaseDataSource(conn);
 		}
 		return null;
 	}

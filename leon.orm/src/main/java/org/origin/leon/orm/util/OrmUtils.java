@@ -22,6 +22,7 @@ public class OrmUtils {
 				Field[] fields = clazz.getDeclaredFields();
 				for(int i=1;i<=count;i++){
 					String fieldName = rsdata.getColumnLabel(i);
+					System.out.println(rsdata.getColumnType(i));
 					for(Field field : fields) {
 						if(field.getName().toLowerCase().equals(fieldName.toLowerCase())) {
 							Method md = clazz.getDeclaredMethod(getFieldSetter(fieldName),field.getType());
